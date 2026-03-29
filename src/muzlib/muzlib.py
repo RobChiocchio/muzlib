@@ -259,11 +259,33 @@ class Muzlib():
                 print(f"Invalid search type: {search_type}")
                 return None
             
-            if questionary.confirm(f"Is this the {search_type.name} you searched for?\n  {full_name}").ask():
-                return result
-            
     
-    def download_by_search_result(self, search_result, search_type: SearchType):
+    def get_download_summary(self, search_result, search_type: SearchType):
+        track_count = 0
+
+        if search_type == SearchType.ARTIST:
+            artist_details = self.ytmusic.get_artist(search_result['browseId'])
+            print(artist_details['songs'])
+            for album_type in ["albums", "singles"]:
+                if not album_type in artist_details: continue
+
+                albums = artist_details[album_type]['results']
+
+                if artist_details[album_type]['browseId']:
+                    albums = self.ytmusic.get_artist_albums(artist_details[album_type]['browseId'], params=None, limit=None)
+            
+                for album in albums:
+                    album_details = self.ytmusic.get_album(album['browseId'])
+                    track_count += album_details['trackCount'] 
+                    
+        elif search_type == SearchType.ALBUM:
+            album_details = self.ytmusic.get_album(search_result['browseId'])
+            track_count = album_details['trackCount']   
+        elif search_type == SearchType.SONG:
+            track_count = 1
+
+        return track_count
+    
         if search_type == SearchType.ARTIST:
             self._get_discography_by_artist_id(search_result['browseId'])
         elif search_type == SearchType.ALBUM:
