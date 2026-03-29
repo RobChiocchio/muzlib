@@ -195,7 +195,6 @@ class Muzlib():
         return artist_name
     
     def _get_album_metadata(self, ytm_album_id, single_id=None, single_name=None):
-        album_metadata = []
 
         album_details = self.ytmusic.get_album(ytm_album_id)
         for track in album_details['tracks']:
