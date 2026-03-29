@@ -436,6 +436,7 @@ def main():
     from rich.panel import Panel
     from rich.prompt import Prompt
     from rich import print as rprint
+    from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn
     import questionary
 
     console = Console()
@@ -495,6 +496,24 @@ def main():
         download_summary = ml.get_download_summary(selected_result, search_type)
 
 
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[bold cyan]{task.description}"),
+        BarColumn(),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        TextColumn("[cyan][{task.completed}/{task.total}]"),
+        TimeElapsedColumn(),
+        TextColumn("[dim][{task.fields[track_name]}]"),
+    ) as progress:
+        task = progress.add_task("Downloading...", total=download_summary, track_name="")
+
+        for track_info in ml.get_track_info(selected_result, search_type):
+            song_name = f"{track_info['track_artists_str']} - {track_info['track_name']}"
+            progress.update(task, track_name=song_name)
+            ml.download_by_track_info(track_info)
+            progress.update(task, advance=1)
+
+    console.print(f"[green]✓ Done![/green]")
 
 if __name__ == "__main__":
     main()
