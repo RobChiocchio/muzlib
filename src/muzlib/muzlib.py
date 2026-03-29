@@ -296,22 +296,6 @@ class Muzlib():
             logging_utils.logging.error(f"Invalid search type: {search_type}")
             print(f"Invalid search type: {search_type}")
 
-    def _get_artist_id(self, artist_name, download_top_result=False):
-        search_results = self.ytmusic.search(artist_name, filter="artists")
-        if not search_results: return ''
-
-        for artist in search_results:
-            if not download_top_result:
-                artist_name = artist['artist']
-                answer = input(f"Did you search artist {artist_name}? [y/n]: ")
-
-                # Skip current album
-                if answer.lower()[0] != 'y': continue
-
-            return artist['browseId']
-    
-        return ''
-
     def _get_discography_by_artist_id(self,artist_id):
         
         artist_details = self.ytmusic.get_artist(artist_id)
