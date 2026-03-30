@@ -2,6 +2,7 @@ import os
 import re
 import json
 import time
+import shutil
 import base64
 import requests
 from pathlib import Path
@@ -136,6 +137,7 @@ class Muzlib():
         self.use_db = skip_downloaded
 
         self.info_path = '.muzlib'
+        self.tmp_path = files_utils.get_tmp_folder()
 
         self.library_path = library_path
         self.db_path = "db.json"
@@ -165,7 +167,7 @@ class Muzlib():
         except Exception as e:
             logging_utils.logging.error(f"Error creating folders: {e}")
 
-        self.ydl_opts['outtmpl'] = os.path.join(self.library_path, self.ydl_opts['outtmpl'])
+        self.ydl_opts['outtmpl'] = os.path.join(self.tmp_path, self.ydl_opts['outtmpl'])
 
         # Database path
         self.info_path = os.path.join(self.library_path, self.info_path)
@@ -348,7 +350,7 @@ class Muzlib():
 
             self.__download_track_youtube(id)
             
-            file_path = os.path.join(self.library_path, f"{id}{self.extension}")
+            file_path = os.path.join(self.tmp_path, f"{id}{self.extension}")
 
             # Add tag to the track
             tag_utils.add_tag(file_path,track_info)
@@ -374,7 +376,7 @@ class Muzlib():
             print(f"Error downloading track {track_info.get('track_name','Unknown')} with id {track_info.get('ytm_id','Unknown')}: {e}")            
 
     def __move_downloaded_track(self, id, track_info):
-        file_path = os.path.join(self.library_path, f"{id}{self.extension}")
+        file_path = os.path.join(self.tmp_path, f"{id}{self.extension}")
 
         # Specify filename
         new_filename = _sanitize_filename(_replace_slash(track_info['track_artists_str'] + " - " + track_info['track_name']))
@@ -401,7 +403,7 @@ class Muzlib():
         new_path = os.path.join(self.library_path, new_path + self.extension)
 
         os.makedirs(os.path.dirname(new_path), exist_ok=True)
-        os.rename(file_path, new_path)
+        shutil.move(file_path, new_path)
         print(f"Successfully downloaded {new_path}")
 
 

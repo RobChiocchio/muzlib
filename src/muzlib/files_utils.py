@@ -1,6 +1,8 @@
 """Files utilities for Muzlib."""
+import os
 import sys
 from pathlib import Path
+import tempfile
 
 def get_default_music_directory():
     """"Get the default music directory for the current platform."""
@@ -34,6 +36,12 @@ def get_default_music_directory():
     # Default fallback for anything else
     return Path.home() / "Music" / "Muzlib"
 
+def get_tmp_folder():
+    tmp_folder = tempfile.gettempdir()
+    muzlib_tmp_folder = os.path.join(tmp_folder, "muzlib")
+    os.makedirs(muzlib_tmp_folder, exist_ok=True)
+
+    return muzlib_tmp_folder
 
 def find_audio_files(directory):
     """"Find audio files in the given directory and its subdirectories."""
