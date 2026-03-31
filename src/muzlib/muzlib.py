@@ -134,6 +134,7 @@ class Muzlib():
                     'preferredcodec': codec,
                     'preferredquality': '0', # Best quality
             }],
+            'noprogress': True,
             'quiet': True,
             'no_warnings': True,
             'cookiefile': cookie_path
@@ -491,7 +492,7 @@ def main():
 
     selected_result = None
     for selected_result in ml.go_though_search_results(search_results, search_type):
-        if questionary.confirm(f"Is this the {search_type.name} you searched for?\n  {selected_result['title']}").ask():
+        if questionary.confirm(f"Is this the {search_type.name.lower()} you searched for?\n  {selected_result['title']}").ask():
             break
 
     with console.status(f"[cyan]Retrieving information…[/cyan]"):
