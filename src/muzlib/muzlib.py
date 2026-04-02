@@ -76,6 +76,7 @@ def _sanitize_filename(filename, replacement="_"):
     
     return sanitized
 
+
 def _get_image(url, retries=3, delay=2):
     for attempt in range(retries):
         response = requests.get(url, timeout=10)
@@ -224,8 +225,7 @@ class Muzlib():
             track_info['ytm_title'] = f"{track_info['track_artists_str']} - {track['title']}"
 
             yield track_info
-            
-    
+
     def search(self, search_type: SearchType, *, artist_name="", album_name="", song_name=""):
         
         search_query = ""
@@ -362,11 +362,13 @@ class Muzlib():
             tag_utils.add_tag(file_path,track_info)
 
             # Rename and move track
-            self.__move_downloaded_track(id, track_info)
+            new_path = self.__move_downloaded_track(id, track_info)
             
             # Save database
             self.db[id] = track_info['track_artists_str'] + " - " + track_info['track_name']
             self.__write_db()
+
+            return new_path
         except Exception as e:
             missing_path = os.path.join(self.library_path, self.missing_path)
 
@@ -410,7 +412,8 @@ class Muzlib():
 
         os.makedirs(os.path.dirname(new_path), exist_ok=True)
         shutil.move(file_path, new_path)
-        print(f"Successfully downloaded {new_path}")
+
+        return new_path
 
 
     def __download_track_youtube(self,track_id):
