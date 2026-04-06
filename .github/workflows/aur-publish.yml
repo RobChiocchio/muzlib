@@ -29,7 +29,7 @@ jobs:
         uses: KSXGitHub/github-actions-deploy-aur@v3
         with:
           pkgname: python-muzlib
-          pkgbuild: .deploy/linux/PKGBUILD
+          pkgbuild: ./deploy/linux/PKGBUILD
           commit_username: ${{ github.repository_owner }}
           commit_email: ezvezdov22@gmail.com
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
