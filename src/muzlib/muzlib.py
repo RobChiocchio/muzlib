@@ -81,17 +81,26 @@ def _get_feat_artists(track_name:str) -> list[str]:
 
     return []
 
-def _sanitize_filename(filename, replacement="_"):
+def _sanitize_filename(filename:str) -> str:
     """
-    Remove or replace unsupported characters in a filename.
-    :param filename: Original filename.
-    :param replacement: Character to replace unsupported characters.
-    :return: Sanitized filename.
+    Sanitizes a string for use as a safe file or directory name.
+
+    This function replaces characters that are forbidden in most file systems 
+    (Linux, Windows, MacOS, Android) with visually similar full-width Unicode equivalents 
+    or safe alternatives.
+
+    Args:
+        filename (str): The original, unsanitized filename string.
+
+    Returns:
+        str: The sanitized filename safe for writing to disk.
+
+    Examples:
+        >>> _sanitize_filename('My "Awesome" Track: Part 1/2?')
+        "My ''Awesome'' Track： Part 1／2？"
+        >>> _sanitize_filename("Title<With>Illegal*Chars|")
+        'Title＜With＞Illegal＊Chars∣'
     """
-    # Define invalid characters for different platforms
-    # if os.name == 'nt':  # Windows
-    #     invalid_chars = r'[\0]'  # Windows-specific invalid characters
-        
     filename = re.sub(r'[:]', "：", filename)
     filename = re.sub(r'[?]', "？", filename)
     filename = re.sub(r'[*]', "＊", filename)
@@ -100,21 +109,9 @@ def _sanitize_filename(filename, replacement="_"):
     filename = re.sub(r'[/]', "／", filename)
     filename = re.sub(r'["]', "\'\'", filename)
     filename = re.sub(r'[|]', "∣", filename)
-
-    # else:  # macOS/Linux
-    invalid_chars = r'[\0]'
+    filename = re.sub(r'[\0]', "", filename)
     
-    # Replace invalid characters
-    sanitized = re.sub(invalid_chars, replacement, filename)
-    
-    # Handle reserved names in Windows (optional)
-    reserved_names = {'CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3', 'COM4',
-                      'COM5', 'COM6', 'COM7', 'COM8', 'COM9', 'LPT1', 'LPT2', 'LPT3',
-                      'LPT4', 'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9'}
-    if os.name == 'nt' and sanitized.upper().split('.')[0] in reserved_names:
-        sanitized = f"{replacement}{sanitized}"
-    
-    return sanitized
+    return filename
 
 
 def _get_image(url, retries=3, delay=2):
