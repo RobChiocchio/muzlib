@@ -206,8 +206,11 @@ class Muzlib():
 
             # Single downloading
             if not single_name is None and not single_id is None and len(album_details['tracks']) > 1:
-                if track['title'] != single_name and track_info['ytm_id'] != single_id:
+                if not track['title'] in single_name and track_info['ytm_id'] != single_id:
                     continue
+                # TODO: add handling video clips + downloading songs from albums that have video clips as tracks
+                # if track['title'] != single_name and track_info['ytm_id'] != single_id:
+                #     continue
 
             track_info['track_artists'] = [_replace_slash(self._artist_rename(artist['name'])) for artist in track['artists']] + _get_feat_artists(track['title'])
             track_info['track_artists_str'] = ", ".join(track_info['track_artists'])
